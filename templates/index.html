@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Todo Extractor</title>
+    <style>
+        :root {
+            --whatsapp-green: #128C7E;
+            --whatsapp-light-green: #25D366;
+            --whatsapp-chat-bg: #DCF8C6;
+            --whatsapp-dark-green: #075E54;
+            --whatsapp-blue: #34B7F1;
+            --light-gray: #f0f0f0;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #666;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f8fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--whatsapp-green);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--whatsapp-light-green);
+            border-radius: 8px;
+            padding: 60px 40px;
+            text-align: center;
+            margin: 30px 0;
+            background-color: var(--whatsapp-chat-bg);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .upload-area.highlight {
+            background-color: #c5f0a4;
+            border-color: var(--whatsapp-green);
+        }
+        
+        #fileInput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .upload-label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            display: block;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--whatsapp-green);
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 8px;
+            margin-top: 15px;
+            transition: all 0.3s;
+            pointer-events: none; /* Allow clicks to pass through to file input */
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--whatsapp-dark-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            background-color: var(--whatsapp-green);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-block;
+            transition: background-color 0.3s;
+            margin: 5px 0;
+        }
+        
+        .btn:hover {
+            background-color: var(--whatsapp-dark-green);
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--whatsapp-dark-green);
+        }
+        
+        /* Results section */
+        #resultsSection {
+            margin-top: 30px;
+            border-top: 1px solid var(--medium-gray);
+            padding-top: 20px;
+            display: none;
+        }
+        
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        /* Todo table structure */
+        .todo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .todo-table-header {
+            display: flex;
+            background-color: var(--whatsapp-green);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .todo-table-header-cell {
+            flex: 1;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .todo-table-body {
+            border: 1px solid var(--medium-gray);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            overflow: hidden;
+        }
+        
+        .todo-row {
+            display: flex;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--medium-gray);
+            align-items: center;
+            background-color: white;
+            transition: background-color 0.2s;
+        }
+        
+        .todo-row:last-child {
+            border-bottom: none;
+        }
+        
+        .todo-row.completed {
+            background-color: var(--light-gray);
+            opacity: 0.8;
+        }
+        
+        .todo-cell {
+            flex: 1;
+            padding: 5px;
+        }
+        
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .task-text {
+            font-weight: 500;
+        }
+        
+        .task-text.completed {
+            text-decoration: line-through;
+            color: var(--dark-gray);
+        }
+        
+        .todo-time {
+            font-size: 13px;
+            color: var(--dark-gray);
+            text-align: right;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: var(--whatsapp-green);
+            margin: 30px 0;
+            opacity: 0.3;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--whatsapp-dark-green);
+            margin: 20px 0 10px;
+        }
+        
+        .no-todos {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-gray);
+            font-style: italic;
+            border: 1px dashed var(--medium-gray);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .upload-area {
+                padding: 40px 20px;
+            }
+            
+            .upload-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+            
+            .todo-table-header, .todo-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .todo-cell {
+                width: 100%;
+                padding: 5px 0;
+            }
+            
+            .todo-time {
+                text-align: left;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp Todo Extractor</h1>
+        <p class="description">
+            Upload your WhatsApp chat export to extract todos and tasks
+        </p>
+        
+        <form id="uploadForm">
+            <div class="upload-area" id="dropZone">
+                <span class="upload-label">Click to choose a WhatsApp chat file</span>
+                <span class="upload-label">or drag and drop it here</span>
+                <div class="upload-btn">Choose File</div>
+                <input type="file" id="fileInput" name="file" accept=".txt">
+                <div class="file-info" id="fileInfo"></div>
+            </div>
+            
+            <div class="error" id="errorMessage"></div>
+        </form>
+        
+        <div id="resultsSection">
+            <div class="header-row">
+                <h2>Extracted Todos</h2>
+                <div class="controls">
+                    <label>
+                        <input type="checkbox" id="showCompleted">
+                        Show Completed Tasks
+                    </label>
+                    <button class="btn btn-small" id="clearStorage">Reset Completion Status</button>
+                </div>
+            </div>
+            
+            <!-- Assigned Tasks Section -->
+            <h3 class="section-title">Tasks I Need To Do</h3>
+            <div id="myTasksContainer">
+                <div class="todo-table">
+                    <div class="todo-table-header">
+                        <div class="todo-table-header-cell">Task</div>
+                        <div class="todo-table-header-cell" style="text-align: right;">Time</div>
+                    </div>
+                    <div class="todo-table-body" id="myTasksBody"></div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Assigned To Others Section -->
+            <h3 class="section-title">Tasks I Assigned To Others</h3>
+            <div id="assignedTasksContainer">
+                <div class="todo-table">
+                    <div class="todo-table-header">
+                        <div class="todo-table-header-cell">Task</div>
+                        <div class="todo-table-header-cell" style="text-align: right;">Time</div>
+                    </div>
+                    <div class="todo-table-body" id="assignedTasksBody"></div>
+                </div>
+            </div>
+            
+            <!-- Download Buttons -->
+            <div style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="btn" id="downloadMyTasksBtn">Download My Tasks</button>
+                <button class="btn" id="downloadAssignedTasksBtn">Download Assigned Tasks</button>
+                <button class="btn" id="downloadAllBtn">Download All Tasks</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const fileInfo = document.getElementById('fileInfo');
+        const resultsSection = document.getElementById('resultsSection');
+        const showCompleted = document.getElementById('showCompleted');
+        const clearStorage = document.getElementById('clearStorage');
+        const myTasksBody = document.getElementById('myTasksBody');
+        const assignedTasksBody = document.getElementById('assignedTasksBody');
+        const downloadMyTasksBtn = document.getElementById('downloadMyTasksBtn');
+        const downloadAssignedTasksBtn = document.getElementById('downloadAssignedTasksBtn');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        
+        // Store todos globally
+        let currentTodos = [];
+        let completedTodos = JSON.parse(localStorage.getItem('completedTodos')) || {};
+        
+        // Initialize - Fix for Chrome's multiple click issue
+        let isProcessing = false;
+        
+        // Event Listeners
+        dropZone.addEventListener('click', (e) => {
+            if (!isProcessing) {
+                fileInput.click();
+            }
+        });
+        
+        // Handle drag and drop
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight(e) {
+            e.preventDefault();
+            dropZone.classList.add('highlight');
+        }
+        
+        function unhighlight(e) {
+            e.preventDefault();
+            dropZone.classList.remove('highlight');
+        }
+        
+        // Handle file drop
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+                updateFileInfo();
+            }
+        });
+        
+        // Handle file selection
+        fileInput.addEventListener('change', updateFileInfo);
+        
+        function updateFileInfo() {
+            if (fileInput.files && fileInput.files.length) {
+                const file = fileInput.files[0];
+                if (file.name.endsWith('.txt')) {
+                    fileInfo.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+                    showError('');
+                    processUpload();
+                } else {
+                    fileInfo.textContent = '';
+                    showError('Please select a .txt file');
+                }
+            }
+        }
+        
+        function processUpload() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            if (!fileInput.files || !fileInput.files.length) {
+                showError('Please select a file first');
+                isProcessing = false;
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (!file.name.endsWith('.txt')) {
+                showError('Invalid file type. Please upload a .txt file');
+                isProcessing = false;
+                return;
+            }
+            
+            // UI updates
+            resultsSection.style.display = 'none';
+            showError('');
+            myTasksBody.innerHTML = '';
+            assignedTasksBody.innerHTML = '';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/extract', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    currentTodos = data.todos;
+                    renderTodos();
+                    resultsSection.style.display = 'block';
+                } else {
+                    showError(data.error || 'Error processing your file');
+                }
+                isProcessing = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('Failed to connect to server. Please try again.');
+                isProcessing = false;
+            });
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = message ? 'block' : 'none';
+        }
+        
+        // Render todos to UI
+        function renderTodos() {
+            myTasksBody.innerHTML = '';
+            assignedTasksBody.innerHTML = '';
+            
+            if (currentTodos.length === 0) {
+                myTasksBody.innerHTML = '<div class="no-todos">No todos found in this chat</div>';
+                return;
+            }
+            
+            const showCompletedChecked = showCompleted.checked;
+            let myTasksCount = 0;
+            let assignedTasksCount = 0;
+            
+            currentTodos.forEach(todo => {
+                const todoId = todo.id || `todo_${todo.timestamp}_${todo.task.substring(0, 10)}`;
+                const isCompleted = completedTodos[todoId];
+                
+                if (!showCompletedChecked && isCompleted) {
+                    return; // Skip completed todos when not showing them
+                }
+                
+                // Simplify the task text (remove names)
+                let simplifiedTask = todo.task.replace(/^.*wants.*to/, '').trim();
+                simplifiedTask = simplifiedTask.replace(/^(send|submit|mail|provide)/, '$1:').trim();
+                
+                // Determine if it's my task or assigned to others
+                const isMyTask = todo.task.includes("wants you to") || 
+                                todo.task.includes("wants me to") || 
+                                todo.recipient === "me";
+                
+                const todoRow = document.createElement('div');
+                todoRow.className = `todo-row ${isCompleted ? 'completed' : ''}`;
+                todoRow.dataset.id = todoId;
+                
+                todoRow.innerHTML = `
+                    <div class="todo-cell" style="flex: 0 0 30px;">
+                        <input type="checkbox" class="todo-checkbox" ${isCompleted ? 'checked' : ''}>
+                    </div>
+                    <div class="todo-cell">
+                        <div class="task-text ${isCompleted ? 'completed' : ''}">${simplifiedTask}</div>
+                    </div>
+                    <div class="todo-cell" style="flex: 0 0 100px;">
+                        <div class="todo-time">${todo.timestamp}</div>
+                    </div>
+                `;
+                
+                // Add event listener to checkbox
+                const checkbox = todoRow.querySelector('.todo-checkbox');
+                checkbox.addEventListener('change', function() {
+                    const todoId = todoRow.dataset.id;
+                    if (this.checked) {
+                        completedTodos[todoId] = true;
+                        todoRow.classList.add('completed');
+                        todoRow.querySelector('.task-text').classList.add('completed');
+                    } else {
+                        delete completedTodos[todoId];
+                        todoRow.classList.remove('completed');
+                        todoRow.querySelector('.task-text').classList.remove('completed');
+                    }
+                    saveCompletedTodos();
+                });
+                
+                if (isMyTask) {
+                    myTasksBody.appendChild(todoRow);
+                    myTasksCount++;
+                } else {
+                    assignedTasksBody.appendChild(todoRow);
+                    assignedTasksCount++;
+                }
+            });
+            
+            // Show empty state if no todos in a section
+            if (myTasksCount === 0) {
+                myTasksBody.innerHTML = '<div class="no-todos">No tasks assigned to you</div>';
+            }
+            
+            if (assignedTasksCount === 0) {
+                assignedTasksBody.innerHTML = '<div class="no-todos">No tasks assigned by you</div>';
+            }
+        }
+        
+        // Save completed todos to localStorage
+        function saveCompletedTodos() {
+            localStorage.setItem('completedTodos', JSON.stringify(completedTodos));
+        }
+        
+        // Download functions
+        downloadMyTasksBtn.addEventListener('click', () => {
+            const myTasks = currentTodos.filter(todo => 
+                todo.task.includes("wants you to") || 
+                todo.task.includes("wants me to") ||
+                todo.recipient === "me"
+            );
+            downloadTodos(myTasks, 'my_tasks');
+        });
+        
+        downloadAssignedTasksBtn.addEventListener('click', () => {
+            const assignedTasks = currentTodos.filter(todo => 
+                !todo.task.includes("wants you to") && 
+                !todo.task.includes("wants me to") &&
+                todo.recipient !== "me"
+            );
+            downloadTodos(assignedTasks, 'assigned_tasks');
+        });
+        
+        downloadAllBtn.addEventListener('click', () => {
+            downloadTodos(currentTodos, 'all_tasks');
+        });
+        
+        function downloadTodos(todos, prefix) {
+            // Filter out completed todos
+            const pendingTodos = todos.filter(todo => {
+                const todoId = todo.id || `todo_${todo.timestamp}_${todo.task.substring(0, 10)}`;
+                return !completedTodos[todoId];
+            });
+            
+            if (pendingTodos.length === 0) {
+                alert(`No pending todos in ${prefix.replace('_', ' ')} to download`);
+                return;
+            }
+            
+            // Simplify task text for download
+            const simplifiedTodos = pendingTodos.map(todo => {
+                let simplifiedTask = todo.task.replace(/^.*wants.*to/, '').trim();
+                simplifiedTask = simplifiedTask.replace(/^(send|submit|mail|provide)/, '$1:').trim();
+                
+                return {
+                    ...todo,
+                    simplifiedTask: simplifiedTask
+                };
+            });
+            
+            // Create download
+            const jsonStr = JSON.stringify(simplifiedTodos, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `whatsapp_${prefix}_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Show completed toggle
+        showCompleted.addEventListener('change', renderTodos);
+        
+        // Clear completion status
+        clearStorage.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all completion statuses?')) {
+                completedTodos = {};
+                saveCompletedTodos();
+                renderTodos();
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Object.keys(completedTodos).length > 0) {
+                showCompleted.checked = true;
+            }
+            
+            // Fix for Chrome's multiple click issue
+            fileInput.addEventListener('click', (e) => e.stopPropagation());
+        });
+    </script>
+</body>
+</html>
