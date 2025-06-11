@@ -30,7 +30,9 @@ This project extracts actionable to-do tasks from WhatsApp `.txt` chats using sm
 git clone https://github.com/prince1823/wp_1.git
 
 Run the Flask backend:  cd backend
+
 pip install -r requirements.txt
+
 python app.py
 
 3. Open `frontend/index.html` in your browser.
