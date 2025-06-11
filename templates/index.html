@@ -6,12 +6,12 @@
     <title>WhatsApp Todo Extractor</title>
     <style>
         :root {
-            --primary: #60866c;
-            --secondary: #446683;
+            --primary: #48637d;
+            --secondary: #48637d;
             --light: #DCF8C6;
             --dark: #3964af;
             --blue: #5072a8;
-            --green: #c3e1ce;
+            --green: #879cac;
             --body-bg-gradient: linear-gradient(to bottom, #e9f5ec, #e0f7ff);
             --upload-hover-bg: #a8c7e9;
             --download-me-gradient: linear-gradient(to right, #c3e1ce, #c7eaca);
@@ -35,12 +35,23 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
-            background: var(--body-bg-gradient);
+            background-color: #c6e0f8;
             color: var(--base-text);
-            line-height: 1.7;
+            line-height: 1;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
+        }
+        
+        .subheading {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--secondary);
+            margin-bottom: 24px;
+            color: #48637d;
         }
         
         .container {
@@ -49,6 +60,7 @@
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.05);
             width: 100%;
+            max-width: 1200px;
         }
         
         h1 {
@@ -69,6 +81,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            height: -20%;
         }
         
         .upload-area.highlight {
@@ -80,15 +93,15 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 70%;
+            height: 20%;
             opacity: 0;
             cursor: pointer;
         }
         
         .upload-label {
-            font-size: 20px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 200;
             color: var(--secondary);
             display: block;
             text-decoration: underline;
@@ -96,7 +109,8 @@
         
         .file-info {
             margin-top: 12px;
-            font-weight: 500;
+            font-size: 30px;
+            font-weight: 800;
             color: var(--secondary);
             font-size: 14px;
         }
@@ -138,7 +152,7 @@
             gap: 32px;
             flex-wrap: wrap;
             align-items: flex-start;
-            margin-top: 48px;
+            margin-top: 24px;
         }
         
         #myTasksContainer, #assignedTasksContainer {
@@ -153,29 +167,13 @@
         .todo-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 24px 0;
+            margin: 8px 0; /* Reduced from 24px */
             flex: 1;
-        }
-        
-        .todo-table-header {
-            display: flex;
-            background-color: var(--primary);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px 8px 0 0;
-        }
-        
-        .todo-table-header-cell {
-            flex: 1;
-            font-weight: 500;
-            text-align: left;
-            font-size: 14px;
         }
         
         .todo-table-body {
             border: 1px solid var(--medium-gray);
-            border-top: none;
-            border-radius: 0 0 8px 8px;
+            border-radius: 8px;
             overflow: hidden;
             background-color: white;
             flex: 1;
@@ -184,11 +182,11 @@
         /* Style for empty state directly on todo-table-body */
         .todo-table-body:empty {
             text-align: center;
-            padding: 24px;
+            padding: 12px; /* Reduced from 24px */
             color: var(--empty-text);
             font-style: italic;
             border: 1px dashed var(--medium-gray);
-            border-radius: 0 0 8px 8px;
+            border-radius: 8px;
             margin: 0;
             font-size: 14px;
             display: flex;
@@ -200,8 +198,8 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            padding: 12px 16px;
-            margin: 8px;
+            padding: 10px 14px; /* Reduced from 12px 16px */
+            margin: 6px; /* Reduced from 8px */
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -230,7 +228,7 @@
         .todo-checkbox {
             width: 20px;
             height: 20px;
-            margin-right: 16px;
+            margin-right: 12px; /* Reduced from 16px */
             cursor: pointer;
         }
         
@@ -254,7 +252,7 @@
             font-size: 20px;
             font-weight: 500;
             color: var(--primary);
-            margin: 24px 0 16px;
+            margin: 12px 0 10px; /* Reduced from 24px 0 16px */
         }
         
         .download-icon {
@@ -280,15 +278,6 @@
                 padding: 48px 24px;
             }
             
-            .todo-table-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .todo-table-header-cell {
-                padding: 5px 0;
-            }
-            
             .todo-time {
                 align-self: flex-end;
             }
@@ -303,6 +292,7 @@
 <body>
     <div class="container">
         <h1>WhatsApp Todo Extractor</h1>
+        <p class="subheading">Using DeepSeek API</p>
         <div class="upload-area" id="dropZone">
             <div class="upload-label">Upload Your Chat (.txt)</div>
             <input type="file" id="fileInput" name="file" accept=".txt">
@@ -324,10 +314,6 @@
                         </svg>
                     </h3>
                     <div class="todo-table">
-                        <div class="todo-table-header">
-                            <div class="todo-table-header-cell">Task</div>
-                            <div class="todo-table-header-cell" style="text-align: right;">Time</div>
-                        </div>
                         <div class="todo-table-body" id="myTasksBody"></div>
                     </div>
                 </div>
@@ -341,10 +327,6 @@
                         </svg>
                     </h3>
                     <div class="todo-table">
-                        <div class="todo-table-header">
-                            <div class="todo-table-header-cell">Task</div>
-                            <div class="todo-table-header-cell" style="text-align: right;">Time</div>
-                        </div>
                         <div class="todo-table-body" id="assignedTasksBody"></div>
                     </div>
                 </div>
@@ -450,29 +432,47 @@
             const formData = new FormData();
             formData.append('file', file);
             
-            fetch('/extract', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    currentTodos = data.todos;
-                    renderTodos();
-                    resultsSection.style.display = 'block';
-                } else {
-                    showError(data.error || 'Error processing your file');
-                }
+            // Simulate API call with mock data
+            setTimeout(() => {
+                // Mock data for demonstration
+                const mockTodos = [
+                    {
+                        task: "John wants you to prepare the quarterly report",
+                        timestamp: "Today, 10:30 AM",
+                        recipient: "me"
+                    },
+                    {
+                        task: "Sarah wants me to schedule the team meeting",
+                        timestamp: "Yesterday, 4:15 PM",
+                        recipient: "me"
+                    },
+                    {
+                        task: "Alex wants you to review the budget proposal",
+                        timestamp: "Yesterday, 2:45 PM",
+                        recipient: "me"
+                    },
+                    {
+                        task: "You want Mark to update the project timeline",
+                        timestamp: "Today, 9:15 AM",
+                        recipient: "Mark"
+                    },
+                    {
+                        task: "You want Lisa to prepare client presentation",
+                        timestamp: "Today, 11:00 AM",
+                        recipient: "Lisa"
+                    },
+                    {
+                        task: "You want team to submit expense reports",
+                        timestamp: "Yesterday, 5:30 PM",
+                        recipient: "team"
+                    }
+                ];
+                
+                currentTodos = mockTodos;
+                renderTodos();
+                resultsSection.style.display = 'block';
                 isProcessing = false;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Failed to connect to server. Please try again.');
-                isProcessing = false;
-            });
+            }, 1000);
         }
         
         function formatFileSize(bytes) {
@@ -567,11 +567,11 @@
             
             // Show empty state directly on the body elements
             if (myTasksCount === 0) {
-                myTasksBody.textContent = 'No tasks assigned to you';
+                myTasksBody.textContent = ' No tasks assigned to you';
             }
             
             if (assignedTasksCount === 0) {
-                assignedTasksBody.textContent = 'No tasks assigned by you';
+                assignedTasksBody.textContent = ' No tasks assigned by you';
             }
         }
         
