@@ -27,7 +27,7 @@ This project extracts actionable to-do tasks from WhatsApp `.txt` chats using sm
 ## ▶️ Running Locally
 
 1. Clone the repo:
-git clone https://github.com/yourusername/Whatsapp_todo_extractor_using_REGEX.git
+git clone https://github.com/prince1823/wp_1.git
 
 Run the Flask backend:  cd backend
 pip install -r requirements.txt
