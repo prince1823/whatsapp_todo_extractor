@@ -6,16 +6,23 @@
     <title>WhatsApp Todo Extractor</title>
     <style>
         :root {
-            --whatsapp-green: #128C7E;
-            --whatsapp-light-green: #25D366;
-            --whatsapp-chat-bg: #DCF8C6;
-            --whatsapp-dark-green: #075E54;
-            --whatsapp-blue: #34B7F1;
-            --light-gray: #f0f0f0;
-            --medium-gray: #e0e0e0;
-            --dark-gray: #666;
+            --primary: #60866c;
+            --secondary: #446683;
+            --light: #DCF8C6;
+            --dark: #3964af;
+            --blue: #5072a8;
+            --green: #c3e1ce;
+            --body-bg-gradient: linear-gradient(to bottom, #e9f5ec, #e0f7ff);
+            --upload-hover-bg: #a8c7e9;
+            --download-me-gradient: linear-gradient(to right, #c3e1ce, #c7eaca);
+            --download-others-gradient: linear-gradient(to right, #f77062, #fe5196);
+            --empty-text: #999;
+            --base-text: #333;
+            --timestamp-text: #666;
+            --completed-text: #bbb;
+            --medium-gray: #E0E0E0;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -23,49 +30,50 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1000px;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f8fa;
-            color: #333;
-            line-height: 1.6;
+            padding: 40px 20px;
+            background: var(--body-bg-gradient);
+            color: var(--base-text);
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
         }
         
         .container {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            width: 100%;
         }
         
         h1 {
-            color: var(--whatsapp-green);
+            color: var(--primary);
             text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .description {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #555;
+            margin-bottom: 24px;
+            font-size: 32px;
+            font-weight: 700;
         }
         
         .upload-area {
-            border: 2px dashed var(--whatsapp-light-green);
-            border-radius: 8px;
-            padding: 60px 40px;
+            border: 2px dashed var(--secondary);
+            border-radius: 12px;
+            padding: 80px 40px;
             text-align: center;
-            margin: 30px 0;
-            background-color: var(--whatsapp-chat-bg);
+            margin: 40px 0;
+            background-color: rgb(216,238,255);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             position: relative;
         }
         
         .upload-area.highlight {
-            background-color: #c5f0a4;
-            border-color: var(--whatsapp-green);
+            background-color: var(--upload-hover-bg);
+            border-color: var(--secondary);
         }
         
         #fileInput {
@@ -79,70 +87,33 @@
         }
         
         .upload-label {
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 20px;
             font-weight: 500;
+            color: var(--secondary);
             display: block;
-        }
-        
-        .upload-btn {
-            display: inline-block;
-            background-color: var(--whatsapp-green);
-            color: white;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 8px;
-            margin-top: 15px;
-            transition: all 0.3s;
-            pointer-events: none; /* Allow clicks to pass through to file input */
-        }
-        
-        .upload-btn:hover {
-            background-color: var(--whatsapp-dark-green);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .btn {
-            background-color: var(--whatsapp-green);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: inline-block;
-            transition: background-color 0.3s;
-            margin: 5px 0;
-        }
-        
-        .btn:hover {
-            background-color: var(--whatsapp-dark-green);
-        }
-        
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        
-        .error {
-            color: #ff4444;
-            text-align: center;
-            margin: 10px 0;
-            display: none;
+            text-decoration: underline;
         }
         
         .file-info {
-            margin-top: 10px;
-            font-weight: bold;
-            color: var(--whatsapp-dark-green);
+            margin-top: 12px;
+            font-weight: 500;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+        
+        .error {
+            color: #f56565;
+            text-align: center;
+            margin: 12px 0;
+            display: none;
+            font-size: 14px;
         }
         
         /* Results section */
         #resultsSection {
-            margin-top: 30px;
+            margin-top: 40px;
             border-top: 1px solid var(--medium-gray);
-            padding-top: 20px;
+            padding-top: 32px;
             display: none;
         }
         
@@ -150,148 +121,181 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 32px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px;
         }
         
-        .controls {
+        h2 {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        /* Side-by-side layout for task sections */
+        .tasks-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: var(--light-gray);
-            border-radius: 5px;
+            gap: 32px;
             flex-wrap: wrap;
-            gap: 10px;
+            align-items: flex-start;
+            margin-top: 48px;
+        }
+        
+        #myTasksContainer, #assignedTasksContainer {
+            flex: 1;
+            min-width: 300px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
         }
         
         /* Todo table structure */
         .todo-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 24px 0;
+            flex: 1;
         }
         
         .todo-table-header {
             display: flex;
-            background-color: var(--whatsapp-green);
+            background-color: var(--primary);
             color: white;
-            padding: 10px 15px;
-            border-radius: 6px 6px 0 0;
+            padding: 12px 16px;
+            border-radius: 8px 8px 0 0;
         }
         
         .todo-table-header-cell {
             flex: 1;
-            font-weight: 600;
+            font-weight: 500;
             text-align: left;
+            font-size: 14px;
         }
         
         .todo-table-body {
             border: 1px solid var(--medium-gray);
             border-top: none;
-            border-radius: 0 0 6px 6px;
+            border-radius: 0 0 8px 8px;
             overflow: hidden;
+            background-color: white;
+            flex: 1;
+        }
+        
+        /* Style for empty state directly on todo-table-body */
+        .todo-table-body:empty {
+            text-align: center;
+            padding: 24px;
+            color: var(--empty-text);
+            font-style: italic;
+            border: 1px dashed var(--medium-gray);
+            border-radius: 0 0 8px 8px;
+            margin: 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .todo-row {
             display: flex;
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--medium-gray);
+            flex-direction: row;
             align-items: center;
+            padding: 12px 16px;
+            margin: 8px;
             background-color: white;
-            transition: background-color 0.2s;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: background-color 0.3s ease;
         }
         
-        .todo-row:last-child {
-            border-bottom: none;
+        .todo-row:hover {
+            background-color: #f0f0f0;
         }
         
         .todo-row.completed {
-            background-color: var(--light-gray);
-            opacity: 0.8;
+            background-color: var(--medium-gray);
+        }
+        
+        .task-text.completed {
+            text-decoration: line-through;
+            color: var(--completed-text);
         }
         
         .todo-cell {
+            display: flex;
+            align-items: center;
             flex: 1;
-            padding: 5px;
         }
         
         .todo-checkbox {
             width: 20px;
             height: 20px;
-            margin-right: 15px;
+            margin-right: 16px;
             cursor: pointer;
         }
         
         .task-text {
             font-weight: 500;
-        }
-        
-        .task-text.completed {
-            text-decoration: line-through;
-            color: var(--dark-gray);
+            font-size: 15px;
+            color: var(--base-text);
+            flex: 1;
         }
         
         .todo-time {
-            font-size: 13px;
-            color: var(--dark-gray);
-            text-align: right;
-        }
-        
-        .divider {
-            height: 1px;
-            background-color: var(--whatsapp-green);
-            margin: 30px 0;
-            opacity: 0.3;
+            font-size: 12px;
+            color: var(--timestamp-text);
+            margin-left: auto;
         }
         
         .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--whatsapp-dark-green);
-            margin: 20px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--primary);
+            margin: 24px 0 16px;
         }
         
-        .no-todos {
-            text-align: center;
-            padding: 20px;
-            color: var(--dark-gray);
-            font-style: italic;
-            border: 1px dashed var(--medium-gray);
-            border-radius: 8px;
-            margin: 20px 0;
+        .download-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: #1E90FF;
+            transition: transform 0.2s ease;
+            margin-left: auto;
+        }
+        
+        .download-icon:hover {
+            transform: scale(1.1);
         }
         
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 24px;
             }
             
             .upload-area {
-                padding: 40px 20px;
+                padding: 48px 24px;
             }
             
-            .upload-btn {
-                padding: 12px 30px;
-                font-size: 16px;
-            }
-            
-            .todo-table-header, .todo-row {
+            .todo-table-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
             
-            .todo-cell {
-                width: 100%;
+            .todo-table-header-cell {
                 padding: 5px 0;
             }
             
             .todo-time {
-                text-align: left;
-                margin-top: 5px;
+                align-self: flex-end;
+            }
+            
+            .tasks-container {
+                flex-direction: column;
+                gap: 16px;
             }
         }
     </style>
@@ -299,65 +303,51 @@
 <body>
     <div class="container">
         <h1>WhatsApp Todo Extractor</h1>
-        <p class="description">
-            Upload your WhatsApp chat export to extract todos and tasks
-        </p>
-        
-        <form id="uploadForm">
-            <div class="upload-area" id="dropZone">
-                <span class="upload-label">Click to choose a WhatsApp chat file</span>
-                <span class="upload-label">or drag and drop it here</span>
-                <div class="upload-btn">Choose File</div>
-                <input type="file" id="fileInput" name="file" accept=".txt">
-                <div class="file-info" id="fileInfo"></div>
-            </div>
-            
-            <div class="error" id="errorMessage"></div>
-        </form>
-        
+        <div class="upload-area" id="dropZone">
+            <div class="upload-label">Upload Your Chat (.txt)</div>
+            <input type="file" id="fileInput" name="file" accept=".txt">
+            <div class="file-info" id="fileInfo"></div>
+        </div>
+        <div class="error" id="errorMessage"></div>
         <div id="resultsSection">
             <div class="header-row">
                 <h2>Extracted Todos</h2>
-                <div class="controls">
-                    <label>
-                        <input type="checkbox" id="showCompleted">
-                        Show Completed Tasks
-                    </label>
-                    <button class="btn btn-small" id="clearStorage">Reset Completion Status</button>
-                </div>
             </div>
             
-            <!-- Assigned Tasks Section -->
-            <h3 class="section-title">Tasks I Need To Do</h3>
-            <div id="myTasksContainer">
-                <div class="todo-table">
-                    <div class="todo-table-header">
-                        <div class="todo-table-header-cell">Task</div>
-                        <div class="todo-table-header-cell" style="text-align: right;">Time</div>
+            <div class="tasks-container">
+                <!-- Tasks For Me Section -->
+                <div id="myTasksContainer">
+                    <h3 class="section-title">
+                        Tasks For Me
+                        <svg class="download-icon" id="downloadMyTasksIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4m-8 4h8" />
+                        </svg>
+                    </h3>
+                    <div class="todo-table">
+                        <div class="todo-table-header">
+                            <div class="todo-table-header-cell">Task</div>
+                            <div class="todo-table-header-cell" style="text-align: right;">Time</div>
+                        </div>
+                        <div class="todo-table-body" id="myTasksBody"></div>
                     </div>
-                    <div class="todo-table-body" id="myTasksBody"></div>
                 </div>
-            </div>
-            
-            <div class="divider"></div>
-            
-            <!-- Assigned To Others Section -->
-            <h3 class="section-title">Tasks I Assigned To Others</h3>
-            <div id="assignedTasksContainer">
-                <div class="todo-table">
-                    <div class="todo-table-header">
-                        <div class="todo-table-header-cell">Task</div>
-                        <div class="todo-table-header-cell" style="text-align: right;">Time</div>
+                
+                <!-- Delegated Tasks Section -->
+                <div id="assignedTasksContainer">
+                    <h3 class="section-title">
+                        Delegated Tasks
+                        <svg class="download-icon" id="downloadAssignedTasksIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4m-8 4h8" />
+                        </svg>
+                    </h3>
+                    <div class="todo-table">
+                        <div class="todo-table-header">
+                            <div class="todo-table-header-cell">Task</div>
+                            <div class="todo-table-header-cell" style="text-align: right;">Time</div>
+                        </div>
+                        <div class="todo-table-body" id="assignedTasksBody"></div>
                     </div>
-                    <div class="todo-table-body" id="assignedTasksBody"></div>
                 </div>
-            </div>
-            
-            <!-- Download Buttons -->
-            <div style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
-                <button class="btn" id="downloadMyTasksBtn">Download My Tasks</button>
-                <button class="btn" id="downloadAssignedTasksBtn">Download Assigned Tasks</button>
-                <button class="btn" id="downloadAllBtn">Download All Tasks</button>
             </div>
         </div>
     </div>
@@ -366,17 +356,13 @@
         // DOM Elements
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
-        const uploadForm = document.getElementById('uploadForm');
         const errorMessage = document.getElementById('errorMessage');
         const fileInfo = document.getElementById('fileInfo');
         const resultsSection = document.getElementById('resultsSection');
-        const showCompleted = document.getElementById('showCompleted');
-        const clearStorage = document.getElementById('clearStorage');
         const myTasksBody = document.getElementById('myTasksBody');
         const assignedTasksBody = document.getElementById('assignedTasksBody');
-        const downloadMyTasksBtn = document.getElementById('downloadMyTasksBtn');
-        const downloadAssignedTasksBtn = document.getElementById('downloadAssignedTasksBtn');
-        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const downloadMyTasksIcon = document.getElementById('downloadMyTasksIcon');
+        const downloadAssignedTasksIcon = document.getElementById('downloadAssignedTasksIcon');
         
         // Store todos globally
         let currentTodos = [];
@@ -508,25 +494,23 @@
             assignedTasksBody.innerHTML = '';
             
             if (currentTodos.length === 0) {
-                myTasksBody.innerHTML = '<div class="no-todos">No todos found in this chat</div>';
+                myTasksBody.textContent = 'No todos found in this chat';
                 return;
             }
             
-            const showCompletedChecked = showCompleted.checked;
             let myTasksCount = 0;
             let assignedTasksCount = 0;
             
             currentTodos.forEach(todo => {
-                const todoId = todo.id || `todo_${todo.timestamp}_${todo.task.substring(0, 10)}`;
-                const isCompleted = completedTodos[todoId];
-                
-                if (!showCompletedChecked && isCompleted) {
-                    return; // Skip completed todos when not showing them
-                }
-                
                 // Simplify the task text (remove names)
                 let simplifiedTask = todo.task.replace(/^.*wants.*to/, '').trim();
                 simplifiedTask = simplifiedTask.replace(/^(send|submit|mail|provide)/, '$1:').trim();
+                
+                // Generate todoId
+                const todoId = `todo_${todo.timestamp}_${simplifiedTask.substring(0, 10)}`;
+                
+                // Check if completed
+                const isCompleted = completedTodos[todoId] || false;
                 
                 // Determine if it's my task or assigned to others
                 const isMyTask = todo.task.includes("wants you to") || 
@@ -537,30 +521,37 @@
                 todoRow.className = `todo-row ${isCompleted ? 'completed' : ''}`;
                 todoRow.dataset.id = todoId;
                 
-                todoRow.innerHTML = `
-                    <div class="todo-cell" style="flex: 0 0 30px;">
-                        <input type="checkbox" class="todo-checkbox" ${isCompleted ? 'checked' : ''}>
-                    </div>
-                    <div class="todo-cell">
-                        <div class="task-text ${isCompleted ? 'completed' : ''}">${simplifiedTask}</div>
-                    </div>
-                    <div class="todo-cell" style="flex: 0 0 100px;">
-                        <div class="todo-time">${todo.timestamp}</div>
-                    </div>
-                `;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'todo-checkbox';
+                checkbox.checked = isCompleted;
                 
-                // Add event listener to checkbox
-                const checkbox = todoRow.querySelector('.todo-checkbox');
+                const taskText = document.createElement('div');
+                taskText.className = `task-text ${isCompleted ? 'completed' : ''}`;
+                taskText.textContent = simplifiedTask;
+                
+                const timeText = document.createElement('div');
+                timeText.className = 'todo-time';
+                timeText.textContent = todo.timestamp;
+                
+                const cell = document.createElement('div');
+                cell.className = 'todo-cell';
+                cell.appendChild(checkbox);
+                cell.appendChild(taskText);
+                
+                todoRow.appendChild(cell);
+                todoRow.appendChild(timeText);
+                
+                // Attach event listener to checkbox
                 checkbox.addEventListener('change', function() {
-                    const todoId = todoRow.dataset.id;
                     if (this.checked) {
                         completedTodos[todoId] = true;
                         todoRow.classList.add('completed');
-                        todoRow.querySelector('.task-text').classList.add('completed');
+                        taskText.classList.add('completed');
                     } else {
                         delete completedTodos[todoId];
                         todoRow.classList.remove('completed');
-                        todoRow.querySelector('.task-text').classList.remove('completed');
+                        taskText.classList.remove('completed');
                     }
                     saveCompletedTodos();
                 });
@@ -574,23 +565,22 @@
                 }
             });
             
-            // Show empty state if no todos in a section
+            // Show empty state directly on the body elements
             if (myTasksCount === 0) {
-                myTasksBody.innerHTML = '<div class="no-todos">No tasks assigned to you</div>';
+                myTasksBody.textContent = 'No tasks assigned to you';
             }
             
             if (assignedTasksCount === 0) {
-                assignedTasksBody.innerHTML = '<div class="no-todos">No tasks assigned by you</div>';
+                assignedTasksBody.textContent = 'No tasks assigned by you';
             }
         }
         
-        // Save completed todos to localStorage
         function saveCompletedTodos() {
             localStorage.setItem('completedTodos', JSON.stringify(completedTodos));
         }
         
         // Download functions
-        downloadMyTasksBtn.addEventListener('click', () => {
+        downloadMyTasksIcon.addEventListener('click', () => {
             const myTasks = currentTodos.filter(todo => 
                 todo.task.includes("wants you to") || 
                 todo.task.includes("wants me to") ||
@@ -599,33 +589,23 @@
             downloadTodos(myTasks, 'my_tasks');
         });
         
-        downloadAssignedTasksBtn.addEventListener('click', () => {
+        downloadAssignedTasksIcon.addEventListener('click', () => {
             const assignedTasks = currentTodos.filter(todo => 
                 !todo.task.includes("wants you to") && 
                 !todo.task.includes("wants me to") &&
                 todo.recipient !== "me"
             );
-            downloadTodos(assignedTasks, 'assigned_tasks');
-        });
-        
-        downloadAllBtn.addEventListener('click', () => {
-            downloadTodos(currentTodos, 'all_tasks');
+            downloadTodos(assignedTasks, 'delegated_tasks');
         });
         
         function downloadTodos(todos, prefix) {
-            // Filter out completed todos
-            const pendingTodos = todos.filter(todo => {
-                const todoId = todo.id || `todo_${todo.timestamp}_${todo.task.substring(0, 10)}`;
-                return !completedTodos[todoId];
-            });
-            
-            if (pendingTodos.length === 0) {
-                alert(`No pending todos in ${prefix.replace('_', ' ')} to download`);
+            if (todos.length === 0) {
+                alert(`No todos in ${prefix.replace('_', ' ')} to download`);
                 return;
             }
             
             // Simplify task text for download
-            const simplifiedTodos = pendingTodos.map(todo => {
+            const simplifiedTodos = todos.map(todo => {
                 let simplifiedTask = todo.task.replace(/^.*wants.*to/, '').trim();
                 simplifiedTask = simplifiedTask.replace(/^(send|submit|mail|provide)/, '$1:').trim();
                 
@@ -649,24 +629,8 @@
             URL.revokeObjectURL(url);
         }
         
-        // Show completed toggle
-        showCompleted.addEventListener('change', renderTodos);
-        
-        // Clear completion status
-        clearStorage.addEventListener('click', () => {
-            if (confirm('Are you sure you want to reset all completion statuses?')) {
-                completedTodos = {};
-                saveCompletedTodos();
-                renderTodos();
-            }
-        });
-        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            if (Object.keys(completedTodos).length > 0) {
-                showCompleted.checked = true;
-            }
-            
             // Fix for Chrome's multiple click issue
             fileInput.addEventListener('click', (e) => e.stopPropagation());
         });

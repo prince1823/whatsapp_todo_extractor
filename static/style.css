@@ -59,7 +59,7 @@ h1 {
 }
 
 .btn {
-    background-color: var(--whatsapp-green);
+    background-color: orange;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -168,8 +168,15 @@ h1 {
     margin-right: 15px;
     cursor: pointer;
     user-select: none;
+    
 }
-
+.todo-row.completed {
+    background-color: var(--medium-gray);
+}
+.task-text.completed {
+    text-decoration: line-through;
+    color: var(--completed-text);
+}
 .todo-checkbox input {
     position: absolute;
     opacity: 0;

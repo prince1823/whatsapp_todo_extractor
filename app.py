@@ -5,7 +5,9 @@ from utils.parser import parse_whatsapp_chat
 from utils.extractor import extract_todos
 from datetime import datetime
 
+
 app = Flask(__name__)
+
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
